@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 36 38% 96%;
+    --foreground: 155 45% 11%;
+    --card: 0 0% 100%;
+    --primary: 155 45% 11%;
+    --primary-foreground: 38 50% 92%;
+    --gold: 36 55% 58%;
+    --gold-soft: 36 60% 88%;
+    --gold-deep: 32 55% 48%;
+    --gold-foreground: 155 45% 11%;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1, h2, h3 {
+    @apply font-display text-primary;
+  }
+}
+
+@layer components {
+  .cartao {
+    @apply bg-card rounded-2xl border border-gold/30 shadow-gold;
+  }
+
+  .botao-dourado {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold
+      px-8 py-4 font-sans font-semibold text-gold-foreground shadow-gold-lg
+      transition-transform duration-200 hover:scale-[1.02] active:scale-[0.99]
+      disabled:opacity-60 disabled:hover:scale-100;
+  }
+
+  .linha-dourada {
+    @apply flex items-center gap-3 text-gold;
+  }
+  .linha-dourada::before,
+  .linha-dourada::after {
+    content: '';
+    @apply h-px flex-1 bg-gradient-to-r from-transparent via-gold/60 to-transparent;
+  }
+
+  .campo {
+    @apply w-full rounded-xl border border-gold/40 bg-card px-4 py-3 text-primary
+      placeholder:text-primary/40 outline-none transition
+      focus:border-gold focus:ring-2 focus:ring-gold/30;
+  }
+
+  .rotulo {
+    @apply mb-1.5 block text-sm font-medium text-primary/80;
+  }
+}
