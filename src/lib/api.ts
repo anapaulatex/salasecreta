@@ -14,6 +14,7 @@ import type {
   Lead,
   LeadStatus,
   Momento,
+  Origem,
   Relatorio,
   RelatorioDados,
   Rota,
@@ -24,6 +25,7 @@ import type {
 // ---------------------------------------------------------------------------
 
 const LS_LEADS = 'raiox_demo_leads'
+const LS_LINK_USOS = 'raiox_demo_link_usos'
 const LS_RELATORIOS = 'raiox_demo_relatorios'
 const LS_CONFIG = 'raiox_demo_config'
 const LS_EVENTOS = 'raiox_demo_eventos'
@@ -56,12 +58,34 @@ export interface EnvioRaioX {
   nicho: string
   momento: Momento
   faturamento: Faturamento
+  origem: Origem
   imagens: File[]
 }
+
+/** Normaliza @/link pro nome de usuário puro, em minúsculas. */
+export function extrairHandle(entrada: string): string {
+  return entrada
+    .trim()
+    .replace(/^https?:\/\/(www\.)?instagram\.com\//i, '')
+    .replace(/[/?#].*$/, '')
+    .replace(/^@/, '')
+    .toLowerCase()
+}
+
+export const MENSAGEM_LIMITE_LINK =
+  'Você já usou as 2 análises pelo link desse perfil. Mas relaxa: me envia o print do seu perfil que o raio-x sai igualzinho. 😉'
 
 /** Envia o formulário + prints e dispara a análise. Retorna o id do relatório. */
 export async function enviarRaioX(envio: EnvioRaioX): Promise<string> {
   if (modoDemo || !supabase) {
+    // Limite de 2 análises pelo link por perfil (no modo real, o servidor confere no banco)
+    if (envio.origem === 'link') {
+      const usos = lsLer<Record<string, number>>(LS_LINK_USOS, {})
+      const handle = extrairHandle(envio.instagram)
+      if ((usos[handle] ?? 0) >= 2) throw new Error(MENSAGEM_LIMITE_LINK)
+      usos[handle] = (usos[handle] ?? 0) + 1
+      lsSalvar(LS_LINK_USOS, usos)
+    }
     // Simula o tempo da análise e gera um relatório de exemplo personalizado com o nome/nicho.
     await new Promise((r) => setTimeout(r, 6500))
     const relatorioId = uuid()
@@ -88,6 +112,7 @@ export async function enviarRaioX(envio: EnvioRaioX): Promise<string> {
       whatsapp: envio.whatsapp,
       instagram: envio.instagram,
       nicho: envio.nicho,
+      origem: envio.origem,
       momento: envio.momento,
       faturamento: envio.faturamento,
       rota: classificarRota(envio.momento, envio.faturamento),
@@ -107,6 +132,7 @@ export async function enviarRaioX(envio: EnvioRaioX): Promise<string> {
       whatsapp: envio.whatsapp,
       instagram: envio.instagram,
       nicho: envio.nicho,
+      origem: envio.origem,
       momento: envio.momento,
       faturamento: envio.faturamento,
       rota: classificarRota(envio.momento, envio.faturamento),
@@ -116,20 +142,22 @@ export async function enviarRaioX(envio: EnvioRaioX): Promise<string> {
     .single()
   if (erroLead || !lead) throw new Error(erroLead?.message ?? 'Não consegui registrar o envio.')
 
-  const caminhos: string[] = []
-  for (const [i, arquivo] of envio.imagens.entries()) {
-    const extensao = arquivo.name.split('.').pop() ?? 'jpg'
-    const caminho = `${lead.id}/${i + 1}.${extensao}`
-    const { error: erroUpload } = await supabase.storage.from('prints').upload(caminho, arquivo)
-    if (erroUpload) throw new Error('Não consegui enviar o print. Tenta de novo?')
-    caminhos.push(caminho)
+  if (envio.origem === 'print') {
+    const caminhos: string[] = []
+    for (const [i, arquivo] of envio.imagens.entries()) {
+      const extensao = arquivo.name.split('.').pop() ?? 'jpg'
+      const caminho = `${lead.id}/${i + 1}.${extensao}`
+      const { error: erroUpload } = await supabase.storage.from('prints').upload(caminho, arquivo)
+      if (erroUpload) throw new Error('Não consegui enviar o print. Tenta de novo?')
+      caminhos.push(caminho)
+    }
+    await supabase.from('leads').update({ imagens: caminhos }).eq('id', lead.id)
   }
-
-  await supabase.from('leads').update({ imagens: caminhos }).eq('id', lead.id)
 
   const { data, error } = await supabase.functions.invoke('analisar-raio-x', {
     body: { lead_id: lead.id },
   })
+  if (data?.erro) throw new Error(data.erro)
   if (error || !data?.relatorio_id) {
     throw new Error('A análise não terminou. Tenta enviar de novo em instantes?')
   }
@@ -233,9 +261,13 @@ export async function adminEntrar(senha: string): Promise<boolean> {
 export async function adminListarLeads(senha: string): Promise<Lead[]> {
   if (modoDemo) {
     // Backfill de leads salvos antes do roteamento de oferta existir
-    return lsLer<Lead[]>(LS_LEADS, [...leadsExemplo]).map((l) =>
-      l.rota ? l : { ...l, momento: l.momento ?? 'especialista', faturamento: l.faturamento ?? 'ate_5k', rota: 'mapeamento' },
-    )
+    return lsLer<Lead[]>(LS_LEADS, [...leadsExemplo]).map((l) => ({
+      ...l,
+      origem: l.origem ?? 'print',
+      momento: l.momento ?? 'especialista',
+      faturamento: l.faturamento ?? 'ate_5k',
+      rota: l.rota ?? 'mapeamento',
+    }))
   }
   const { leads } = await chamarAdmin<{ leads: Lead[] }>(senha, 'listar_leads')
   return leads

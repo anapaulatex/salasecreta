@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { enviarRaioX } from '../lib/api'
+import { enviarRaioX, extrairHandle } from '../lib/api'
 import { ROTULO_FATURAMENTO, ROTULO_MOMENTO } from '../lib/rota'
-import type { Faturamento, Momento } from '../lib/types'
+import type { Faturamento, Momento, Origem } from '../lib/types'
 import { Cabecalho, Rodape } from '../components/comum'
 
 const MENSAGENS_ANALISE = [
@@ -62,6 +62,8 @@ export default function RaioXForm() {
   const [nicho, setNicho] = useState('')
   const [momento, setMomento] = useState<Momento | ''>('')
   const [faturamento, setFaturamento] = useState<Faturamento | ''>('')
+  const [origem, setOrigem] = useState<Origem>('print')
+  const [linkPerfil, setLinkPerfil] = useState('')
   const [consentiu, setConsentiu] = useState(false)
   const [imagens, setImagens] = useState<File[]>([])
   const [previews, setPreviews] = useState<string[]>([])
@@ -84,8 +86,12 @@ export default function RaioXForm() {
   async function enviar(e: React.FormEvent) {
     e.preventDefault()
     setErro(null)
-    if (imagens.length === 0) {
+    if (origem === 'print' && imagens.length === 0) {
       setErro('Me envia pelo menos 1 print do seu perfil — sem ele não tem raio-x. 😉')
+      return
+    }
+    if (origem === 'link' && !extrairHandle(linkPerfil || instagram)) {
+      setErro('Me passa o link do seu perfil (ou o seu @) pra eu conseguir analisar.')
       return
     }
     if (!consentiu) {
@@ -94,14 +100,16 @@ export default function RaioXForm() {
     }
     setAnalisando(true)
     try {
+      const handle = extrairHandle(origem === 'link' ? linkPerfil || instagram : instagram)
       const relatorioId = await enviarRaioX({
         nome,
         whatsapp,
-        instagram,
+        instagram: handle ? `@${handle}` : instagram,
         nicho,
         momento: momento as Momento,
         faturamento: faturamento as Faturamento,
-        imagens,
+        origem,
+        imagens: origem === 'print' ? imagens : [],
       })
       navigate(`/relatorio/${relatorioId}`)
     } catch (err) {
@@ -176,34 +184,72 @@ export default function RaioXForm() {
           </div>
 
           <div>
-            <span className="rotulo">Print do seu perfil (bio + feed) — até 3 imagens</span>
-            <input ref={inputArquivo} type="file" accept="image/*" multiple className="hidden"
-              onChange={(e) => { adicionarImagens(e.target.files); e.target.value = '' }} />
-            <button type="button" onClick={() => inputArquivo.current?.click()}
-              className="w-full rounded-xl border-2 border-dashed border-gold/50 bg-gold-soft/20 px-4 py-8 text-center transition hover:border-gold hover:bg-gold-soft/40">
-              <span className="block text-3xl">📱</span>
-              <span className="mt-2 block font-medium text-primary/80">
-                {imagens.length === 0 ? 'Toque pra escolher os prints' : 'Adicionar mais um print'}
-              </span>
-              <span className="mt-1 block text-xs text-primary/50">
-                Vale a tela do perfil aberta, do jeito que uma cliente veria
-              </span>
-            </button>
-            {previews.length > 0 && (
-              <div className="mt-4 flex gap-3">
-                {previews.map((url, i) => (
-                  <div key={url} className="relative">
-                    <img src={url} alt={`Print ${i + 1}`} className="h-28 w-20 rounded-lg border border-gold/40 object-cover" />
-                    <button type="button" aria-label="Remover print"
-                      onClick={() => setImagens(imagens.filter((_, j) => j !== i))}
-                      className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground shadow">
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+            <span className="rotulo">Como você quer que eu analise o seu perfil?</span>
+            <div className="flex gap-2 rounded-full border border-gold/30 bg-gold-soft/20 p-1">
+              {(
+                [
+                  { valor: 'print', rotulo: '📱 Enviar prints' },
+                  { valor: 'link', rotulo: '🔗 Pelo link do perfil' },
+                ] as { valor: Origem; rotulo: string }[]
+              ).map((op) => (
+                <button key={op.valor} type="button" onClick={() => setOrigem(op.valor)}
+                  className={`flex-1 rounded-full px-4 py-2.5 text-sm font-medium transition ${
+                    origem === op.valor
+                      ? 'bg-gradient-gold text-gold-foreground shadow-gold'
+                      : 'text-primary/60 hover:text-primary'
+                  }`}>
+                  {op.rotulo}
+                </button>
+              ))}
+            </div>
           </div>
+
+          {origem === 'print' ? (
+            <div>
+              <span className="rotulo">Print do seu perfil (bio + feed) — até 3 imagens</span>
+              <input ref={inputArquivo} type="file" accept="image/*" multiple className="hidden"
+                onChange={(e) => { adicionarImagens(e.target.files); e.target.value = '' }} />
+              <button type="button" onClick={() => inputArquivo.current?.click()}
+                className="w-full rounded-xl border-2 border-dashed border-gold/50 bg-gold-soft/20 px-4 py-8 text-center transition hover:border-gold hover:bg-gold-soft/40">
+                <span className="block text-3xl">📱</span>
+                <span className="mt-2 block font-medium text-primary/80">
+                  {imagens.length === 0 ? 'Toque pra escolher os prints' : 'Adicionar mais um print'}
+                </span>
+                <span className="mt-1 block text-xs text-primary/50">
+                  Vale a tela do perfil aberta, do jeito que uma cliente veria
+                </span>
+              </button>
+              {previews.length > 0 && (
+                <div className="mt-4 flex gap-3">
+                  {previews.map((url, i) => (
+                    <div key={url} className="relative">
+                      <img src={url} alt={`Print ${i + 1}`} className="h-28 w-20 rounded-lg border border-gold/40 object-cover" />
+                      <button type="button" aria-label="Remover print"
+                        onClick={() => setImagens(imagens.filter((_, j) => j !== i))}
+                        className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground shadow">
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div>
+              <label htmlFor="linkPerfil" className="rotulo">Link do seu perfil</label>
+              <input id="linkPerfil" className="campo" placeholder="https://instagram.com/seuperfil"
+                value={linkPerfil}
+                onChange={(e) => {
+                  setLinkPerfil(e.target.value)
+                  const handle = extrairHandle(e.target.value)
+                  if (handle) setInstagram(`@${handle}`)
+                }} />
+              <div className="mt-3 space-y-1 rounded-xl bg-gold-soft/25 px-4 py-3 text-xs leading-relaxed text-primary/70">
+                <p>✦ O seu perfil precisa estar <strong>público</strong> — se for privado, me envia o print.</p>
+                <p>✦ A análise pelo link pode ser feita <strong>no máximo 2 vezes por perfil</strong>. Depois disso, é pelo print.</p>
+              </div>
+            </div>
+          )}
 
           <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-gold-soft/20 p-4 text-sm text-primary/80">
             <input type="checkbox" checked={consentiu} onChange={(e) => setConsentiu(e.target.checked)}

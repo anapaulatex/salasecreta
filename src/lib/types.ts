@@ -36,12 +36,16 @@ export type Faturamento = 'nao_faturo' | 'ate_5k' | 'de_5k_a_10k' | 'acima_10k'
 /** Pra qual oferta essa lead vai depois da Sala Secreta / mapeamento */
 export type Rota = 'academia' | 'mnia' | 'mapeamento'
 
+/** Como o perfil foi analisado: print enviado ou coleta pelo link público */
+export type Origem = 'print' | 'link'
+
 export interface Lead {
   id: string
   nome: string
   whatsapp: string
   instagram: string
   nicho: string
+  origem: Origem
   momento: Momento
   faturamento: Faturamento
   rota: Rota
