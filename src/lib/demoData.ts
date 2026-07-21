@@ -87,6 +87,9 @@ export const relatorioExemplo: RelatorioDados = {
         'Posiciona você como a especialista que enxerga o que o atendimento apressado não vê — justamente o que a cliente premium procura.',
     },
   ],
+  degrauEscala:
+    'E tem um degrau acima do perfil arrumado, que quase nenhuma nutricionista enxerga: o seu método pode virar soluções com Inteligência Artificial — e ser vendido de forma escalável. O acompanhamento que hoje só existe quando você está presente pode virar um assistente que orienta a paciente entre as consultas; o seu protocolo pode virar um programa que atende 50 mulheres sem lotar a agenda. É a diferença entre vender a sua hora e vender o seu método — com mais valor, sem trabalhar mais. Esse é o caminho que as especialistas da mentoria estão fazendo.',
+  pilar: 'autoridade',
 }
 
 export const relatorioReenvioExemplo: RelatorioDados = {
@@ -123,6 +126,7 @@ export const leadsExemplo: Lead[] = [
     origem: 'print',
     momento: 'especialista',
     faturamento: 'acima_10k',
+    pilar: 'autoridade',
     rota: 'mapeamento',
     status: 'novo',
     created_at: diasAtras(0),
@@ -137,6 +141,7 @@ export const leadsExemplo: Lead[] = [
     origem: 'print',
     momento: 'transicao',
     faturamento: 'de_5k_a_10k',
+    pilar: 'clareza',
     rota: 'academia',
     status: 'foi_pra_sala',
     created_at: diasAtras(1),
@@ -151,6 +156,7 @@ export const leadsExemplo: Lead[] = [
     origem: 'print',
     momento: 'especialista',
     faturamento: 'de_5k_a_10k',
+    pilar: 'tempo',
     rota: 'mapeamento',
     status: 'virou_sessao',
     created_at: diasAtras(2),
@@ -165,6 +171,7 @@ export const leadsExemplo: Lead[] = [
     origem: 'print',
     momento: 'empresaria',
     faturamento: 'ate_5k',
+    pilar: 'vendas',
     rota: 'mnia',
     status: 'novo',
     created_at: diasAtras(3),
@@ -179,6 +186,7 @@ export const leadsExemplo: Lead[] = [
     origem: 'print',
     momento: 'transicao',
     faturamento: 'nao_faturo',
+    pilar: 'vendas',
     rota: 'academia',
     status: 'foi_pra_sala',
     created_at: diasAtras(5),
@@ -200,6 +208,12 @@ export const dashboardExemplo: DashboardDados = {
     { rota: 'mapeamento', total: 2 },
     { rota: 'academia', total: 2 },
     { rota: 'mnia', total: 1 },
+  ],
+  porPilar: [
+    { pilar: 'vendas', total: 2 },
+    { pilar: 'autoridade', total: 1 },
+    { pilar: 'clareza', total: 1 },
+    { pilar: 'tempo', total: 1 },
   ],
   funil: { raioX: 5, cliquesSala: 3, cliquesWhatsApp: 2 },
 }

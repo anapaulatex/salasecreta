@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { obterConfig, obterRelatorio, registrarEvento, resumoWhatsApp } from '../lib/api'
+import { DOR_PILAR, ROTULO_PILAR } from '../lib/pilares'
 import { configPadrao } from '../lib/demoData'
 import type { Config, Relatorio as RelatorioTipo } from '../lib/types'
 import { Cabecalho, NotaBolinhas, Rodape, SeparadorDourado } from '../components/comum'
@@ -89,6 +90,13 @@ export default function Relatorio() {
         <section className="pt-6 text-center">
           <p className="text-sm uppercase tracking-[0.25em] text-gold-deep">✦ Raio-X do Instagram ✦</p>
           <h1 className="mt-4 text-4xl font-semibold md:text-5xl">{primeiroNome}, aqui está o seu diagnóstico</h1>
+          {d.pilar && (
+            <p className="mx-auto mt-5 inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-gold/40 bg-gold-soft/30 px-5 py-2 text-sm text-primary/80">
+              Seu teste apontou: dor mais forte em{' '}
+              <strong className="text-gold-deep">{ROTULO_PILAR[d.pilar]}</strong> —{' '}
+              {DOR_PILAR[d.pilar]}
+            </p>
+          )}
           <p className="mx-auto mt-6 max-w-2xl text-left text-lg leading-relaxed text-primary/80 md:text-center">
             {d.reconhecimento}
           </p>
@@ -188,6 +196,17 @@ export default function Relatorio() {
             ))}
           </div>
         </section>
+
+        {/* O degrau acima do perfil — soluções com Inteligência Artificial + venda escalável */}
+        {d.degrauEscala && (
+          <section className="mt-8 rounded-2xl border border-gold/40 bg-gold-soft/25 p-8 md:p-10">
+            <p className="text-sm uppercase tracking-[0.25em] text-gold-deep">✦ o degrau acima</p>
+            <h2 className="mt-3 text-3xl font-semibold md:text-4xl">
+              Depois do perfil, vem o que quase ninguém enxerga
+            </h2>
+            <p className="mt-5 leading-relaxed text-primary/85">{d.degrauEscala}</p>
+          </section>
+        )}
 
         <SeparadorDourado texto="parte 3 · o próximo passo" />
 

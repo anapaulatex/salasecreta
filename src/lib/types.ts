@@ -16,6 +16,9 @@ export interface IdeiaConteudo {
   porQue: string
 }
 
+/** Pilar de dor identificado no teste (Etapa 1) — mapeia nas fases do método da Ana */
+export type Pilar = 'clareza' | 'tempo' | 'autoridade' | 'vendas'
+
 /** Direção personalizada da bio — o QUE ela precisa dizer, nunca a bio pronta */
 export interface DirecaoBio {
   promessa: string
@@ -35,6 +38,10 @@ export interface RelatorioDados {
   bioSugerida?: string
   viradaDeCategoria: string
   ideias: IdeiaConteudo[]
+  /** O degrau acima do perfil: soluções com Inteligência Artificial + venda escalável no método dela */
+  degrauEscala?: string
+  /** Ecoa o pilar do teste pra personalizar a abertura do relatório */
+  pilar?: Pilar
 }
 
 export type LeadStatus = 'novo' | 'foi_pra_sala' | 'virou_sessao'
@@ -59,6 +66,7 @@ export interface Lead {
   origem: Origem
   momento: Momento
   faturamento: Faturamento
+  pilar: Pilar
   rota: Rota
   status: LeadStatus
   created_at: string
@@ -85,5 +93,6 @@ export interface DashboardDados {
   totalGeral: number
   porNicho: { nicho: string; total: number }[]
   porRota: { rota: Rota; total: number }[]
+  porPilar: { pilar: Pilar; total: number }[]
   funil: { raioX: number; cliquesSala: number; cliquesWhatsApp: number }
 }

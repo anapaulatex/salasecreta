@@ -11,7 +11,8 @@ import {
 } from '../lib/api'
 import { modoDemo } from '../lib/supabase'
 import { ROTULO_FATURAMENTO, ROTULO_MOMENTO, ROTULO_ROTA } from '../lib/rota'
-import type { Config, DashboardDados, Lead, LeadStatus, Rota } from '../lib/types'
+import { ROTULO_PILAR } from '../lib/pilares'
+import type { Config, DashboardDados, Lead, LeadStatus, Pilar, Rota } from '../lib/types'
 import { Cabecalho, Rodape } from '../components/comum'
 
 const ROTULO_STATUS: Record<LeadStatus, string> = {
@@ -162,6 +163,7 @@ export default function Admin() {
                     <th className="px-4 py-3">WhatsApp</th>
                     <th className="px-4 py-3">@</th>
                     <th className="px-4 py-3">Nicho</th>
+                    <th className="px-4 py-3">Pilar</th>
                     <th className="px-4 py-3">Oferta</th>
                     <th className="px-4 py-3">Data</th>
                     <th className="px-4 py-3">Relatório</th>
@@ -175,6 +177,9 @@ export default function Admin() {
                       <td className="px-4 py-3">{l.whatsapp}</td>
                       <td className="px-4 py-3">{l.instagram}</td>
                       <td className="px-4 py-3">{l.nicho}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-primary/80">
+                        {ROTULO_PILAR[l.pilar] ?? '—'}
+                      </td>
                       <td className="px-4 py-3">
                         <BadgeRota
                           rota={l.rota}
@@ -261,6 +266,21 @@ export default function Admin() {
                   return (
                     <div key={r} className="rounded-xl bg-gold-soft/20 p-4 text-center">
                       <p className="text-sm text-primary/70">{ROTULO_ROTA[r]}</p>
+                      <p className="mt-1 font-display text-4xl font-semibold text-gold-deep">{total}</p>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className="cartao p-6">
+              <h3 className="text-xl font-semibold">Por pilar de dor (teste da Etapa 1)</h3>
+              <div className="mt-4 grid gap-4 md:grid-cols-4">
+                {(['vendas', 'clareza', 'autoridade', 'tempo'] as Pilar[]).map((p) => {
+                  const total = dashboard.porPilar?.find((x) => x.pilar === p)?.total ?? 0
+                  return (
+                    <div key={p} className="rounded-xl bg-gold-soft/20 p-4 text-center">
+                      <p className="text-sm text-primary/70">{ROTULO_PILAR[p]}</p>
                       <p className="mt-1 font-display text-4xl font-semibold text-gold-deep">{total}</p>
                     </div>
                   )

@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
       case 'listar_leads': {
         const { data, error } = await supabase
           .from('leads')
-          .select('id, nome, whatsapp, instagram, nicho, momento, faturamento, rota, status, created_at, relatorios (id)')
+          .select('id, nome, whatsapp, instagram, nicho, momento, faturamento, pilar, rota, status, created_at, relatorios (id)')
           .order('created_at', { ascending: false })
         if (error) throw error
         const leads = (data ?? []).map((l) => ({
@@ -51,6 +51,7 @@ Deno.serve(async (req) => {
           nicho: l.nicho,
           momento: l.momento,
           faturamento: l.faturamento,
+          pilar: l.pilar,
           rota: l.rota,
           status: l.status,
           created_at: l.created_at,
@@ -94,7 +95,7 @@ Deno.serve(async (req) => {
       case 'dashboard': {
         const umaSemanaAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
         const [{ data: leads }, { data: eventos }] = await Promise.all([
-          supabase.from('leads').select('nicho, rota, created_at'),
+          supabase.from('leads').select('nicho, rota, pilar, created_at'),
           supabase.from('eventos').select('tipo'),
         ])
         const todos = leads ?? []
@@ -102,6 +103,8 @@ Deno.serve(async (req) => {
         for (const l of todos) porNicho.set(l.nicho, (porNicho.get(l.nicho) ?? 0) + 1)
         const porRota = new Map<string, number>()
         for (const l of todos) porRota.set(l.rota, (porRota.get(l.rota) ?? 0) + 1)
+        const porPilar = new Map<string, number>()
+        for (const l of todos) porPilar.set(l.pilar ?? 'vendas', (porPilar.get(l.pilar ?? 'vendas') ?? 0) + 1)
         return json({
           dashboard: {
             totalSemana: todos.filter((l) => l.created_at > umaSemanaAtras).length,
@@ -111,6 +114,9 @@ Deno.serve(async (req) => {
               .sort((a, b) => b.total - a.total),
             porRota: [...porRota.entries()]
               .map(([rota, total]) => ({ rota, total }))
+              .sort((a, b) => b.total - a.total),
+            porPilar: [...porPilar.entries()]
+              .map(([pilar, total]) => ({ pilar, total }))
               .sort((a, b) => b.total - a.total),
             funil: {
               raioX: todos.length,

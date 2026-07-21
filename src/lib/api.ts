@@ -7,6 +7,7 @@ import {
   relatorioExemploCompleto,
 } from './demoData'
 import { classificarRota, ROTULO_FATURAMENTO, ROTULO_MOMENTO, ROTULO_ROTA } from './rota'
+import { ROTULO_PILAR } from './pilares'
 import type {
   Config,
   DashboardDados,
@@ -15,6 +16,7 @@ import type {
   LeadStatus,
   Momento,
   Origem,
+  Pilar,
   Relatorio,
   RelatorioDados,
   Rota,
@@ -58,6 +60,7 @@ export interface EnvioRaioX {
   nicho: string
   momento: Momento
   faturamento: Faturamento
+  pilar: Pilar
   origem: Origem
   imagens: File[]
 }
@@ -93,6 +96,7 @@ export async function enviarRaioX(envio: EnvioRaioX): Promise<string> {
     const dados: RelatorioDados = {
       ...relatorioExemplo,
       reconhecimento: relatorioExemplo.reconhecimento.replace('Camila', primeiroNome),
+      pilar: envio.pilar,
     }
     const relatorios = lsLer<Record<string, Relatorio>>(LS_RELATORIOS, {})
     relatorios[relatorioId] = {
@@ -115,6 +119,7 @@ export async function enviarRaioX(envio: EnvioRaioX): Promise<string> {
       origem: envio.origem,
       momento: envio.momento,
       faturamento: envio.faturamento,
+      pilar: envio.pilar,
       rota: classificarRota(envio.momento, envio.faturamento),
       status: 'novo',
       created_at: new Date().toISOString(),
@@ -135,6 +140,7 @@ export async function enviarRaioX(envio: EnvioRaioX): Promise<string> {
       origem: envio.origem,
       momento: envio.momento,
       faturamento: envio.faturamento,
+      pilar: envio.pilar,
       rota: classificarRota(envio.momento, envio.faturamento),
       consentimento: true,
     })
@@ -267,6 +273,7 @@ export async function adminListarLeads(senha: string): Promise<Lead[]> {
       origem: l.origem ?? 'print',
       momento: l.momento ?? 'especialista',
       faturamento: l.faturamento ?? 'ate_5k',
+      pilar: l.pilar ?? 'vendas',
       rota: l.rota ?? 'mapeamento',
     }))
   }
@@ -313,6 +320,8 @@ export async function adminDashboard(senha: string): Promise<DashboardDados> {
     for (const l of leads) porNicho.set(l.nicho, (porNicho.get(l.nicho) ?? 0) + 1)
     const porRota = new Map<Rota, number>()
     for (const l of leads) porRota.set(l.rota, (porRota.get(l.rota) ?? 0) + 1)
+    const porPilar = new Map<Pilar, number>()
+    for (const l of leads) porPilar.set(l.pilar ?? 'vendas', (porPilar.get(l.pilar ?? 'vendas') ?? 0) + 1)
     return {
       totalSemana: leads.filter((l) => new Date(l.created_at).getTime() > umaSemanaAtras).length,
       totalGeral: leads.length,
@@ -321,6 +330,9 @@ export async function adminDashboard(senha: string): Promise<DashboardDados> {
         .sort((a, b) => b.total - a.total),
       porRota: [...porRota.entries()]
         .map(([rota, total]) => ({ rota, total }))
+        .sort((a, b) => b.total - a.total),
+      porPilar: [...porPilar.entries()]
+        .map(([pilar, total]) => ({ pilar, total }))
         .sort((a, b) => b.total - a.total),
       funil: {
         raioX: leads.length,
@@ -337,13 +349,14 @@ export async function adminDashboard(senha: string): Promise<DashboardDados> {
 }
 
 export function exportarCsv(leads: Lead[]): string {
-  const cabecalho = ['Nome', 'WhatsApp', 'Instagram', 'Nicho', 'Momento', 'Faturamento', 'Oferta', 'Data', 'Status', 'Relatório']
+  const cabecalho = ['Nome', 'WhatsApp', 'Instagram', 'Nicho', 'Pilar', 'Momento', 'Faturamento', 'Oferta', 'Data', 'Status', 'Relatório']
   const linhas = leads.map((l) =>
     [
       l.nome,
       l.whatsapp,
       l.instagram,
       l.nicho,
+      ROTULO_PILAR[l.pilar] ?? l.pilar ?? '',
       ROTULO_MOMENTO[l.momento] ?? l.momento,
       ROTULO_FATURAMENTO[l.faturamento] ?? l.faturamento,
       ROTULO_ROTA[l.rota] ?? l.rota,

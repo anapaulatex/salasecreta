@@ -23,7 +23,7 @@ const MENSAGEM_LIMITE_LINK =
 const ESQUEMA_RELATORIO = {
   type: 'object',
   additionalProperties: false,
-  required: ['tipo', 'mensagemReenvio', 'reconhecimento', 'eixos', 'bioDirecao', 'viradaDeCategoria', 'ideias'],
+  required: ['tipo', 'mensagemReenvio', 'reconhecimento', 'eixos', 'bioDirecao', 'viradaDeCategoria', 'ideias', 'degrauEscala'],
   properties: {
     tipo: { type: 'string', enum: ['relatorio', 'reenvio'] },
     mensagemReenvio: {
@@ -80,6 +80,10 @@ const ESQUEMA_RELATORIO = {
       type: 'string',
       description: 'Texto personalizado no formato: no mercado dela, quase ninguém se posicionou como a especialista que domina Inteligência Artificial; essa cadeira está vazia e quem senta primeiro vira referência.',
     },
+    degrauEscala: {
+      type: 'string',
+      description: 'O degrau acima do perfil: como o MÉTODO dela pode virar soluções com Inteligência Artificial vendidas de forma escalável, agregando mais valor — 3-5 frases personalizadas com o nicho e o pilar de dor dela. Cite CATEGORIAS de solução (assistente, programa, produto do método), NUNCA o blueprint/passo a passo. Feche conectando com o caminho das especialistas da mentoria.',
+    },
     ideias: {
       type: 'array',
       items: {
@@ -113,6 +117,7 @@ REGRAS DA ANÁLISE (invioláveis):
 3. A Parte 2 entrega direção real e utilizável (o que a bio precisa dizer, virada de categoria, 3 ideias com gancho pronto) — mas NUNCA o passo a passo profundo. NUNCA reescreva a bio pronta pela pessoa: entregue a direção dos 3 elementos (promessa, público, chamada); escrever a bio junto é papel da Sala Secreta e da mentoria da Ana.
 4. As 3 ideias de conteúdo miram os clientes de MAIOR potencial dela (quem pode contratá-la), não o seguidor curioso. Nomeie a persona pela dor ou momento de vida, nunca com tecnicês.
 5. A virada de categoria é o clímax: no mercado/nicho DELA, quase ninguém se posicionou como a especialista que domina Inteligência Artificial — essa cadeira está vazia, e quem senta primeiro vira referência. Personalize com o nicho declarado.
+5b. O degrauEscala aponta o horizonte além do perfil: o método dela virando soluções com Inteligência Artificial e venda escalável. Calibre pelo pilar de dor do teste (clareza = "não sei pra quem falo"; tempo = "escrava da agenda"; autoridade = "boa e invisível"; vendas = "dependo da minha hora pra faturar"). O relatório inteiro — abertura, virada e degrau — deve conversar com esse pilar.
 6. Se o material estiver ilegível, não for um perfil do Instagram, ou os dados coletados estiverem vazios: retorne tipo="reenvio" com mensagemReenvio carinhosa pedindo o print do perfil (a tela aberta, como uma cliente veria), e deixe os demais campos vazios/lista vazia. Nunca invente uma análise que você não conseguiu fazer.
 
 Responda em português brasileiro.`
@@ -150,7 +155,7 @@ Deno.serve(async (req) => {
 
     const { data: lead, error: erroLead } = await supabase
       .from('leads')
-      .select('id, nome, nicho, instagram, origem, momento, faturamento, imagens, consentimento')
+      .select('id, nome, nicho, instagram, origem, momento, faturamento, pilar, imagens, consentimento')
       .eq('id', lead_id)
       .single()
     if (erroLead || !lead) throw new Error('Lead não encontrado')
@@ -280,7 +285,7 @@ Deno.serve(async (req) => {
             ...(conteudo as any[]),
             {
               type: 'text',
-              text: `${descricaoMaterial}\n\nPerfil de ${lead.nome} (${lead.instagram}), que se declarou como: "${lead.nicho}". Momento declarado: ${contextoMomento(lead.momento)}. Use esse contexto pra calibrar exemplos e a virada de categoria (sem citar faturamento nem rotular a pessoa). Gere o Raio-X completo dela.`,
+              text: `${descricaoMaterial}\n\nPerfil de ${lead.nome} (${lead.instagram}), que se declarou como: "${lead.nicho}". Momento declarado: ${contextoMomento(lead.momento)}. Pilar de dor apontado pelo teste: ${lead.pilar ?? 'vendas'}. Use esse contexto pra calibrar a abertura, os exemplos, a virada de categoria e o degrauEscala (sem citar faturamento nem rotular a pessoa). Gere o Raio-X completo dela.`,
             },
           ],
         },
@@ -293,6 +298,7 @@ Deno.serve(async (req) => {
     const blocoTexto = resposta.content.find((b) => b.type === 'text')
     if (!blocoTexto || blocoTexto.type !== 'text') throw new Error('Resposta sem conteúdo')
     const dados = JSON.parse(blocoTexto.text)
+    dados.pilar = lead.pilar ?? 'vendas'
 
     const { data: relatorio, error: erroRelatorio } = await supabase
       .from('relatorios')

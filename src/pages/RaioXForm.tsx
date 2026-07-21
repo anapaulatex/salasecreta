@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { enviarRaioX, extrairHandle } from '../lib/api'
+import { computarPilar, PERGUNTAS_TESTE, ROTULO_PILAR } from '../lib/pilares'
 import { ROTULO_FATURAMENTO, ROTULO_MOMENTO } from '../lib/rota'
-import type { Faturamento, Momento, Origem } from '../lib/types'
+import type { Faturamento, Momento, Origem, Pilar } from '../lib/types'
 import { Cabecalho, Rodape } from '../components/comum'
 
 const MENSAGENS_ANALISE = [
@@ -54,8 +55,49 @@ function TelaAnalisando() {
   )
 }
 
+function TesteDosPilares({ aoConcluir }: { aoConcluir: (pilar: Pilar) => void }) {
+  const [indice, setIndice] = useState(0)
+  const [respostas, setRespostas] = useState<Pilar[]>([])
+
+  function responder(pilar: Pilar) {
+    const novas = [...respostas, pilar]
+    if (novas.length === PERGUNTAS_TESTE.length) {
+      aoConcluir(computarPilar(novas))
+      return
+    }
+    setRespostas(novas)
+    setIndice(indice + 1)
+  }
+
+  const pergunta = PERGUNTAS_TESTE[indice]
+
+  return (
+    <div className="cartao p-8">
+      <p className="text-xs uppercase tracking-[0.2em] text-gold-deep">
+        Etapa 1 de 2 · Teste dos pilares
+      </p>
+      <h2 className="mt-3 text-2xl font-semibold md:text-3xl">{pergunta.pergunta}</h2>
+      <div className="mt-6 space-y-3">
+        {pergunta.opcoes.map((op) => (
+          <button key={op.pilar} type="button" onClick={() => responder(op.pilar)}
+            className="w-full rounded-xl border border-gold/40 bg-gold-soft/15 px-5 py-4 text-left text-sm leading-relaxed text-primary/85 transition hover:border-gold hover:bg-gold-soft/40 hover:shadow-gold">
+            {op.texto}
+          </button>
+        ))}
+      </div>
+      <div className="mt-8 flex justify-center gap-2">
+        {PERGUNTAS_TESTE.map((_, i) => (
+          <span key={i}
+            className={`h-1.5 w-8 rounded-full transition ${i <= indice ? 'bg-gradient-gold' : 'bg-gold-soft'}`} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function RaioXForm() {
   const navigate = useNavigate()
+  const [pilar, setPilar] = useState<Pilar | null>(null)
   const [nome, setNome] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
   const [instagram, setInstagram] = useState('')
@@ -108,6 +150,7 @@ export default function RaioXForm() {
         nicho,
         momento: momento as Momento,
         faturamento: faturamento as Faturamento,
+        pilar: pilar ?? 'vendas',
         origem,
         imagens: origem === 'print' ? imagens : [],
       })
@@ -124,14 +167,29 @@ export default function RaioXForm() {
     <div className="min-h-screen">
       <Cabecalho />
       <main className="mx-auto max-w-2xl px-6 pb-10">
-        <div className="mb-10 text-center">
-          <h1 className="text-4xl font-semibold md:text-5xl">Me conta sobre você</h1>
-          <p className="mt-4 text-primary/70">
-            Preenche rapidinho e envia o print do seu perfil — a análise leva cerca de 2 minutos.
-          </p>
-        </div>
+        {!pilar ? (
+          <>
+            <div className="mb-10 text-center">
+              <h1 className="text-4xl font-semibold md:text-5xl">Onde dói mais no seu negócio?</h1>
+              <p className="mt-4 text-primary/70">
+                4 cliques e eu descubro o seu pilar — a análise do seu perfil vai ser calibrada por ele.
+              </p>
+            </div>
+            <TesteDosPilares aoConcluir={setPilar} />
+          </>
+        ) : (
+          <>
+            <div className="mb-10 text-center">
+              <p className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold-soft/30 px-4 py-1.5 text-sm text-gold-deep">
+                ✦ Seu pilar: <strong>{ROTULO_PILAR[pilar]}</strong>
+              </p>
+              <h1 className="mt-4 text-4xl font-semibold md:text-5xl">Agora me conta sobre você</h1>
+              <p className="mt-4 text-primary/70">
+                Etapa 2 de 2 — seus dados e o seu perfil. A análise leva cerca de 2 minutos.
+              </p>
+            </div>
 
-        <form onSubmit={enviar} className="cartao space-y-6 p-8">
+            <form onSubmit={enviar} className="cartao space-y-6 p-8">
           <div>
             <label htmlFor="nome" className="rotulo">Seu nome</label>
             <input id="nome" className="campo" required value={nome} placeholder="Como você quer ser chamada"
@@ -269,10 +327,12 @@ export default function RaioXForm() {
           <button type="submit" className="botao-dourado w-full text-lg">
             Analisar meu perfil agora ✦
           </button>
-          <p className="text-center text-xs text-primary/50">
-            A gente nunca pede a sua senha — a análise usa só o print que você enviou.
-          </p>
-        </form>
+              <p className="text-center text-xs text-primary/50">
+                A gente nunca pede a sua senha — a análise usa só o print que você enviou.
+              </p>
+            </form>
+          </>
+        )}
       </main>
       <Rodape />
     </div>
