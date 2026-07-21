@@ -18,7 +18,7 @@ export const relatorioExemplo: RelatorioDados = {
       porQueImporta:
         'Bio não é currículo, é promessa. O CRN comprova que você pode atuar — mas é a promessa que faz a cliente clicar em "seguir" e mandar mensagem.',
       paraNota5:
-        'Trocar o currículo pela promessa: uma linha dizendo o que muda na vida da paciente e pra quem, mais um convite claro de próximo passo. A bio sugerida na Parte 2 já faz isso por você — é copiar e colar.',
+        'Trocar o currículo pela promessa: uma linha dizendo o que muda na vida da paciente e pra quem, mais um convite claro de próximo passo. A Parte 2 te mostra os 3 elementos que não podem faltar.',
     },
     {
       chave: 'temas',
@@ -54,8 +54,14 @@ export const relatorioExemplo: RelatorioDados = {
         'Um caminho só, repetido sempre: destaque "Como funciona" explicando a consulta, link direto e a mesma chamada no fim de todo post. Quem se apaixonar nunca precisa adivinhar o próximo passo.',
     },
   ],
-  bioSugerida:
-    'Nutricionista de mulheres 40+ que já tentaram de tudo\n✦ Emagrecimento sem dieta maluca — com método e acompanhamento\n✦ 15 anos de consultório · presencial e online\n📩 Me conta seu caso no WhatsApp ↓',
+  bioDirecao: {
+    promessa:
+      'Hoje sua bio lista títulos (CRN, pós, atendimento). A primeira linha precisa prometer o que muda na vida da paciente — emagrecer sem viver de dieta maluca, com acompanhamento de verdade. O CRN entra depois, como prova.',
+    publico:
+      'Nomear pra quem você trabalha. Pelo seu feed, suas melhores histórias são de mulheres 40+ que já tentaram de tudo — quando a bio diz isso, a paciente certa se reconhece em 5 segundos.',
+    chamada:
+      'Fechar com UM convite claro de próximo passo. Hoje a bio termina sem porta de entrada — quem se interessa precisa adivinhar o que fazer.',
+  },
   viradaDeCategoria:
     'No seu mercado de nutrição, quase ninguém se posicionou como a especialista que domina Inteligência Artificial. Tem milhares de nutricionistas disputando o mesmo feed com as mesmas receitas — mas a cadeira de "nutricionista que usa Inteligência Artificial pra entregar acompanhamento mais próximo, mais rápido e mais personalizado" está vazia na sua cidade. E quem senta primeiro vira referência: é dela que as pacientes falam, é ela que os convites de palestra procuram, é ela que cobra mais sem pedir desculpa.',
   ideias: [
@@ -89,7 +95,7 @@ export const relatorioReenvioExemplo: RelatorioDados = {
     'Me conta uma coisa: acho que o print não chegou direitinho por aqui. A imagem veio embaçada e não consegui ler a sua bio nem ver os seus posts — e eu não vou te entregar uma análise pela metade. Envia de novo pra mim? Vale a tela do seu perfil aberta, daquele jeito que uma cliente veria. Te espero! 💜',
   reconhecimento: '',
   eixos: [],
-  bioSugerida: '',
+  bioDirecao: { promessa: '', publico: '', chamada: '' },
   viradaDeCategoria: '',
   ideias: [],
 }

@@ -16,6 +16,13 @@ export interface IdeiaConteudo {
   porQue: string
 }
 
+/** Direção personalizada da bio — o QUE ela precisa dizer, nunca a bio pronta */
+export interface DirecaoBio {
+  promessa: string
+  publico: string
+  chamada: string
+}
+
 export interface RelatorioDados {
   tipo: 'relatorio' | 'reenvio'
   /** Preenchido quando tipo === 'reenvio': pedido carinhoso de novo print */
@@ -23,7 +30,9 @@ export interface RelatorioDados {
   /** Abertura que reconhece o ativo — nunca começa pelo problema */
   reconhecimento: string
   eixos: Eixo[]
-  bioSugerida: string
+  bioDirecao: DirecaoBio
+  /** Legado (relatórios antigos entregavam a bio pronta — regra mudou em 20/07/2026) */
+  bioSugerida?: string
   viradaDeCategoria: string
   ideias: IdeiaConteudo[]
 }

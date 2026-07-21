@@ -23,7 +23,7 @@ const MENSAGEM_LIMITE_LINK =
 const ESQUEMA_RELATORIO = {
   type: 'object',
   additionalProperties: false,
-  required: ['tipo', 'mensagemReenvio', 'reconhecimento', 'eixos', 'bioSugerida', 'viradaDeCategoria', 'ideias'],
+  required: ['tipo', 'mensagemReenvio', 'reconhecimento', 'eixos', 'bioDirecao', 'viradaDeCategoria', 'ideias'],
   properties: {
     tipo: { type: 'string', enum: ['relatorio', 'reenvio'] },
     mensagemReenvio: {
@@ -56,9 +56,25 @@ const ESQUEMA_RELATORIO = {
         },
       },
     },
-    bioSugerida: {
-      type: 'string',
-      description: 'Bio pronta pra copiar, com quebras de linha (\\n), especialidade + público + chamada. Máx 150 caracteres úteis por linha, 4 linhas.',
+    bioDirecao: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['promessa', 'publico', 'chamada'],
+      description: 'A direção do que a bio dela precisa dizer — NUNCA a bio pronta/reescrita. Cada campo é personalizado com o que foi observado no perfil dela.',
+      properties: {
+        promessa: {
+          type: 'string',
+          description: 'O que a primeira linha da bio precisa prometer (o resultado pra cliente), contrastando com o que a bio atual diz. 1-2 frases. Sem escrever a frase pronta da bio.',
+        },
+        publico: {
+          type: 'string',
+          description: 'Pra quem a bio precisa falar — o público de maior potencial visível no perfil dela. 1-2 frases.',
+        },
+        chamada: {
+          type: 'string',
+          description: 'O próximo passo que a bio precisa convidar (uma chamada única e clara). 1-2 frases. Sem escrever a chamada pronta.',
+        },
+      },
     },
     viradaDeCategoria: {
       type: 'string',
@@ -94,7 +110,7 @@ VOZ DA ANA (siga à risca):
 REGRAS DA ANÁLISE (invioláveis):
 1. Analise SÓ o que foi fornecido: texto da bio, temas dos posts, presença de rosto/pessoa, link/destaques/chamadas. NUNCA invente métricas que não estejam nos dados fornecidos.
 2. Os 4 eixos são fixos: bio ("Bio"), temas ("Temas dos posts"), posicionamento ("Posicionamento"), caminho ("Caminho da venda"). Nota de 1 a 5. Seja justa: reconheça o que já está bom.
-3. A Parte 2 entrega direção real e utilizável (bio pronta pra copiar, virada de categoria, 3 ideias com gancho pronto) — mas NUNCA o passo a passo profundo. O COMO completo é a Sala Secreta e a mentoria da Ana.
+3. A Parte 2 entrega direção real e utilizável (o que a bio precisa dizer, virada de categoria, 3 ideias com gancho pronto) — mas NUNCA o passo a passo profundo. NUNCA reescreva a bio pronta pela pessoa: entregue a direção dos 3 elementos (promessa, público, chamada); escrever a bio junto é papel da Sala Secreta e da mentoria da Ana.
 4. As 3 ideias de conteúdo miram os clientes de MAIOR potencial dela (quem pode contratá-la), não o seguidor curioso. Nomeie a persona pela dor ou momento de vida, nunca com tecnicês.
 5. A virada de categoria é o clímax: no mercado/nicho DELA, quase ninguém se posicionou como a especialista que domina Inteligência Artificial — essa cadeira está vazia, e quem senta primeiro vira referência. Personalize com o nicho declarado.
 6. Se o material estiver ilegível, não for um perfil do Instagram, ou os dados coletados estiverem vazios: retorne tipo="reenvio" com mensagemReenvio carinhosa pedindo o print do perfil (a tela aberta, como uma cliente veria), e deixe os demais campos vazios/lista vazia. Nunca invente uma análise que você não conseguiu fazer.
@@ -187,7 +203,7 @@ Deno.serve(async (req) => {
             : `Procurei o ${lead.instagram} e não consegui abrir o perfil por aqui. Confere se o @ está certinho — ou me envia o print do seu perfil que a análise sai na hora. 💜`,
           reconhecimento: '',
           eixos: [],
-          bioSugerida: '',
+          bioDirecao: { promessa: '', publico: '', chamada: '' },
           viradaDeCategoria: '',
           ideias: [],
         }

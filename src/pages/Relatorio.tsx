@@ -10,7 +10,6 @@ export default function Relatorio() {
   const [relatorio, setRelatorio] = useState<RelatorioTipo | null>(null)
   const [config, setConfig] = useState<Config>(configPadrao)
   const [carregando, setCarregando] = useState(true)
-  const [copiado, setCopiado] = useState(false)
 
   useEffect(() => {
     if (!id) return
@@ -71,12 +70,6 @@ export default function Relatorio() {
   const primeiroNome =
     partesNome.find((p) => !/^(dr|dra|sr|sra|prof|profa)\.?$/i.test(p)) ?? partesNome[0]
 
-  async function copiarBio() {
-    await navigator.clipboard.writeText(d.bioSugerida)
-    setCopiado(true)
-    setTimeout(() => setCopiado(false), 2500)
-  }
-
   function abrirSala() {
     void registrarEvento(relatorio!.id, 'clique_sala')
     window.open(config.sala_link, '_blank', 'noopener')
@@ -131,18 +124,30 @@ export default function Relatorio() {
 
         <SeparadorDourado texto="parte 2 · como deveria ser" />
 
-        {/* Bio sugerida */}
+        {/* Direção da bio — o que ela precisa dizer (nunca a bio pronta) */}
         <section className="cartao p-8">
-          <h2 className="text-3xl font-semibold">Sua bio, reescrita</h2>
+          <h2 className="text-3xl font-semibold">O que a sua bio precisa dizer</h2>
           <p className="mt-2 text-sm text-primary/60">
-            Escrita pra sua especialidade e pro seu público. É só copiar e colar.
+            Os 3 elementos que transformam bio em promessa — pensados pro seu perfil.
           </p>
-          <pre className="mt-5 whitespace-pre-wrap rounded-xl border border-gold/30 bg-gold-soft/20 p-5 font-sans leading-relaxed text-primary">
-            {d.bioSugerida}
-          </pre>
-          <button onClick={copiarBio} className="botao-dourado mt-5">
-            {copiado ? 'Copiada! ✦' : 'Copiar minha bio nova'}
-          </button>
+          <div className="mt-5 space-y-4">
+            {[
+              { titulo: 'A promessa', texto: d.bioDirecao?.promessa ?? d.bioSugerida ?? '' },
+              { titulo: 'Pra quem', texto: d.bioDirecao?.publico ?? '' },
+              { titulo: 'O próximo passo', texto: d.bioDirecao?.chamada ?? '' },
+            ]
+              .filter((e) => e.texto)
+              .map((e) => (
+                <div key={e.titulo} className="rounded-xl border border-gold/30 bg-gold-soft/20 p-5">
+                  <p className="font-display text-xl font-semibold text-gold-deep">✦ {e.titulo}</p>
+                  <p className="mt-1.5 text-sm leading-relaxed text-primary/85">{e.texto}</p>
+                </div>
+              ))}
+          </div>
+          <p className="mt-5 text-sm italic leading-relaxed text-primary/60">
+            E o como — escrever essa bio em minutos, na sua voz, com Inteligência Artificial — é
+            exatamente o que eu mostro na Sala Secreta.
+          </p>
         </section>
 
         {/* Virada de categoria — o clímax */}
