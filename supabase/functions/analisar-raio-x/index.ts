@@ -39,7 +39,7 @@ const ESQUEMA_RELATORIO = {
       items: {
         type: 'object',
         additionalProperties: false,
-        required: ['chave', 'titulo', 'nota', 'observado', 'porQueImporta'],
+        required: ['chave', 'titulo', 'nota', 'observado', 'porQueImporta', 'paraNota5'],
         properties: {
           chave: { type: 'string', enum: ['bio', 'temas', 'posicionamento', 'caminho'] },
           titulo: { type: 'string' },
@@ -49,6 +49,10 @@ const ESQUEMA_RELATORIO = {
             description: 'O que foi observado NO PERFIL DELA (citar o que está visível). 2-4 frases.',
           },
           porQueImporta: { type: 'string', description: 'Uma linha explicando por que isso importa.' },
+          paraNota5: {
+            type: 'string',
+            description: 'O que falta pra chegar à nota 5 nesse eixo: direção concreta e utilizável hoje (1-2 frases), SEM o passo a passo profundo — o COMO completo é a Sala Secreta e a mentoria. Se a nota já é 5, celebre e diga como manter.',
+          },
         },
       },
     },

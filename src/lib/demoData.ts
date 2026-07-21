@@ -17,6 +17,8 @@ export const relatorioExemplo: RelatorioDados = {
         'Sua bio hoje diz: "Nutricionista · CRN 12345 · Pós em Nutrição Clínica · Atendimento presencial e online". Uma cliente que chega no seu perfil lê isso em 5 segundos e não descobre o principal: o que muda na vida dela se ela te contratar.',
       porQueImporta:
         'Bio não é currículo, é promessa. O CRN comprova que você pode atuar — mas é a promessa que faz a cliente clicar em "seguir" e mandar mensagem.',
+      paraNota5:
+        'Trocar o currículo pela promessa: uma linha dizendo o que muda na vida da paciente e pra quem, mais um convite claro de próximo passo. A bio sugerida na Parte 2 já faz isso por você — é copiar e colar.',
     },
     {
       chave: 'temas',
@@ -26,6 +28,8 @@ export const relatorioExemplo: RelatorioDados = {
         'No seu feed aparecem posts sobre déficit calórico, janela anabólica e leitura de rótulos. Conteúdo correto, bem-feito — mas escrito na linguagem de quem estudou nutrição. A sua cliente não procura "janela anabólica", ela procura "por que eu emagreço e engordo tudo de novo".',
       porQueImporta:
         'Quando o conteúdo é técnico demais, você está postando pro concorrente, não pro cliente. Quem entende os seus termos é outra nutricionista.',
+      paraNota5:
+        'Traduzir cada tema técnico pra dor de quem paga: "janela anabólica" vira "por que você emagrece e engorda tudo de novo". As 3 ideias da Parte 2 já saem nessa língua — é seguir o modelo.',
     },
     {
       chave: 'posicionamento',
@@ -35,6 +39,8 @@ export const relatorioExemplo: RelatorioDados = {
         'Olhando o perfil inteiro, dá pra saber que você é nutricionista — mas não dá pra saber qual é a sua especialidade nem pra quem você trabalha. Emagrecimento? Mulheres 40+? Saúde intestinal? O perfil fala com todo mundo ao mesmo tempo.',
       porQueImporta:
         'Quem fala com todo mundo não é lembrada por ninguém. A cliente certa precisa se reconhecer no seu perfil em segundos — "é de mim que ela está falando".',
+      paraNota5:
+        'Escolher uma especialidade e um público — e assumir nos 3 lugares que a cliente olha primeiro: bio, destaques e os últimos 9 posts do feed. Tudo contando a mesma história.',
     },
     {
       chave: 'caminho',
@@ -44,6 +50,8 @@ export const relatorioExemplo: RelatorioDados = {
         'Quem se apaixona pelo seu conteúdo encontra um link do WhatsApp na bio — isso é um bom começo. Mas não há destaque explicando como funciona a consulta, nem chamada nos posts convidando pro próximo passo. A pessoa interessada precisa adivinhar o caminho.',
       porQueImporta:
         'Interesse sem caminho vira seguidor parado. Cada post é uma vitrine — e vitrine boa mostra onde fica a porta de entrada.',
+      paraNota5:
+        'Um caminho só, repetido sempre: destaque "Como funciona" explicando a consulta, link direto e a mesma chamada no fim de todo post. Quem se apaixonar nunca precisa adivinhar o próximo passo.',
     },
   ],
   bioSugerida:

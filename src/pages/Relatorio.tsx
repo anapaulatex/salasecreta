@@ -116,6 +116,15 @@ export default function Relatorio() {
                 <span className="font-semibold text-gold-deep">Por que isso importa: </span>
                 {eixo.porQueImporta}
               </p>
+              {eixo.paraNota5 && (
+                <div className="mt-4 rounded-xl border border-gold/40 bg-primary/[0.03] px-5 py-4">
+                  <p className="flex items-center gap-2 text-sm font-semibold text-primary">
+                    <span className="text-gold">✦</span> O que falta pra chegar ao{' '}
+                    <span className="font-display text-lg text-gold-deep">5/5</span>
+                  </p>
+                  <p className="mt-1.5 text-sm leading-relaxed text-primary/80">{eixo.paraNota5}</p>
+                </div>
+              )}
             </article>
           ))}
         </section>

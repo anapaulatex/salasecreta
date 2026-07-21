@@ -6,6 +6,8 @@ export interface Eixo {
   nota: 1 | 2 | 3 | 4 | 5
   observado: string
   porQueImporta: string
+  /** Direção concreta do que falta pra nota 5 — sem o passo a passo profundo */
+  paraNota5: string
 }
 
 export interface IdeiaConteudo {
