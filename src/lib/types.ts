@@ -42,6 +42,8 @@ export interface RelatorioDados {
   degrauEscala?: string
   /** Ecoa o pilar do teste pra personalizar a abertura do relatório */
   pilar?: Pilar
+  /** Ecoa a rota — define qual próximo passo a Parte 3 mostra */
+  rota?: Rota
 }
 
 export type LeadStatus = 'novo' | 'foi_pra_sala' | 'virou_sessao'
@@ -77,6 +79,8 @@ export interface Config {
   sala_dia_hora: string
   sala_link: string
   convite_texto: string
+  academia_link: string
+  mnia_link: string
 }
 
 export interface Relatorio {
@@ -94,5 +98,5 @@ export interface DashboardDados {
   porNicho: { nicho: string; total: number }[]
   porRota: { rota: Rota; total: number }[]
   porPilar: { pilar: Pilar; total: number }[]
-  funil: { raioX: number; cliquesSala: number; cliquesWhatsApp: number }
+  funil: { raioX: number; cliquesSala: number; cliquesOferta: number }
 }

@@ -97,6 +97,7 @@ export async function enviarRaioX(envio: EnvioRaioX): Promise<string> {
       ...relatorioExemplo,
       reconhecimento: relatorioExemplo.reconhecimento.replace('Camila', primeiroNome),
       pilar: envio.pilar,
+      rota: classificarRota(envio.momento, envio.faturamento),
     }
     const relatorios = lsLer<Record<string, Relatorio>>(LS_RELATORIOS, {})
     relatorios[relatorioId] = {
@@ -203,12 +204,14 @@ export async function obterConfig(): Promise<Config> {
     sala_dia_hora: data.sala_dia_hora,
     sala_link: data.sala_link,
     convite_texto: data.convite_texto,
+    academia_link: data.academia_link ?? configPadrao.academia_link,
+    mnia_link: data.mnia_link ?? configPadrao.mnia_link,
   }
 }
 
 export async function registrarEvento(
   relatorioId: string,
-  tipo: 'clique_sala' | 'clique_whatsapp',
+  tipo: 'clique_sala' | 'clique_oferta',
 ): Promise<void> {
   if (modoDemo || !supabase) {
     const eventos = lsLer<{ relatorio_id: string; tipo: string; em: string }[]>(LS_EVENTOS, [])
@@ -217,26 +220,6 @@ export async function registrarEvento(
     return
   }
   await supabase.rpc('registrar_evento', { relatorio_id: relatorioId, tipo_evento: tipo })
-}
-
-/** Monta o resumo do relatório formatado pro WhatsApp. */
-export function resumoWhatsApp(relatorio: Relatorio, config: Config): string {
-  const d = relatorio.dados
-  const linhas = [
-    `✦ *Raio-X do Instagram — ${relatorio.nome}*`,
-    '',
-    ...d.eixos.map((e) => `*${e.titulo}:* ${'●'.repeat(e.nota)}${'○'.repeat(5 - e.nota)} (${e.nota}/5)`),
-    '',
-    `*O que a sua bio precisa dizer:*`,
-    `✦ A promessa: ${d.bioDirecao?.promessa ?? d.bioSugerida ?? ''}`,
-    ...(d.bioDirecao ? [`✦ Pra quem: ${d.bioDirecao.publico}`, `✦ O próximo passo: ${d.bioDirecao.chamada}`] : []),
-    '',
-    `*A virada:* ${d.viradaDeCategoria}`,
-    '',
-    `🗓 *Sala Secreta:* ${config.sala_dia_hora}`,
-    `Inscrição: ${config.sala_link}`,
-  ]
-  return linhas.join('\n')
 }
 
 // ---------------------------------------------------------------------------
@@ -338,9 +321,9 @@ export async function adminDashboard(senha: string): Promise<DashboardDados> {
         raioX: leads.length,
         cliquesSala:
           eventos.filter((e) => e.tipo === 'clique_sala').length + dashboardExemplo.funil.cliquesSala,
-        cliquesWhatsApp:
-          eventos.filter((e) => e.tipo === 'clique_whatsapp').length +
-          dashboardExemplo.funil.cliquesWhatsApp,
+        cliquesOferta:
+          eventos.filter((e) => e.tipo === 'clique_oferta').length +
+          dashboardExemplo.funil.cliquesOferta,
       },
     }
   }

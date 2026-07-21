@@ -232,6 +232,19 @@ export default function Admin() {
               <textarea id="convite" className="campo min-h-32" value={config.convite_texto}
                 onChange={(e) => setConfig({ ...config, convite_texto: e.target.value })} />
             </div>
+            <h2 className="pt-2 text-2xl font-semibold">Links das outras ofertas</h2>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <label htmlFor="academia" className="rotulo">Academia das Novas Profissões</label>
+                <input id="academia" className="campo" type="url" value={config.academia_link}
+                  onChange={(e) => setConfig({ ...config, academia_link: e.target.value })} />
+              </div>
+              <div>
+                <label htmlFor="mnia" className="rotulo">MNIA (Meu Negócio com Inteligência Artificial)</label>
+                <input id="mnia" className="campo" type="url" value={config.mnia_link}
+                  onChange={(e) => setConfig({ ...config, mnia_link: e.target.value })} />
+              </div>
+            </div>
             <button type="submit" disabled={salvandoConfig} className="botao-dourado">
               {configSalva ? 'Salvo! ✦' : salvandoConfig ? 'Salvando…' : 'Salvar configuração'}
             </button>
@@ -315,7 +328,7 @@ export default function Admin() {
                   {[
                     { rotulo: 'Raio-X feitos', valor: dashboard.funil.raioX },
                     { rotulo: 'Cliques no botão da Sala', valor: dashboard.funil.cliquesSala },
-                    { rotulo: 'Resumos pedidos no WhatsApp', valor: dashboard.funil.cliquesWhatsApp },
+                    { rotulo: 'Cliques nas ofertas (Academia/MNIA)', valor: dashboard.funil.cliquesOferta ?? 0 },
                   ].map((etapa, i, arr) => {
                     const base = arr[0].valor || 1
                     return (

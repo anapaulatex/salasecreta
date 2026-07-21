@@ -78,15 +78,17 @@ Deno.serve(async (req) => {
             sala_dia_hora: data.sala_dia_hora,
             sala_link: data.sala_link,
             convite_texto: data.convite_texto,
+            academia_link: data.academia_link,
+            mnia_link: data.mnia_link,
           },
         })
       }
 
       case 'salvar_config': {
-        const { sala_dia_hora, sala_link, convite_texto } = payload ?? {}
+        const { sala_dia_hora, sala_link, convite_texto, academia_link, mnia_link } = payload ?? {}
         const { error } = await supabase
           .from('config')
-          .update({ sala_dia_hora, sala_link, convite_texto, updated_at: new Date().toISOString() })
+          .update({ sala_dia_hora, sala_link, convite_texto, academia_link, mnia_link, updated_at: new Date().toISOString() })
           .eq('id', 1)
         if (error) throw error
         return json({ ok: true })
@@ -121,7 +123,7 @@ Deno.serve(async (req) => {
             funil: {
               raioX: todos.length,
               cliquesSala: (eventos ?? []).filter((e) => e.tipo === 'clique_sala').length,
-              cliquesWhatsApp: (eventos ?? []).filter((e) => e.tipo === 'clique_whatsapp').length,
+              cliquesOferta: (eventos ?? []).filter((e) => e.tipo === 'clique_oferta').length,
             },
           },
         })

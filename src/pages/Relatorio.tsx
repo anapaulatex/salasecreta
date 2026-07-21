@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { obterConfig, obterRelatorio, registrarEvento, resumoWhatsApp } from '../lib/api'
+import { obterConfig, obterRelatorio, registrarEvento } from '../lib/api'
 import { DOR_PILAR, ROTULO_PILAR } from '../lib/pilares'
 import { configPadrao } from '../lib/demoData'
 import type { Config, Relatorio as RelatorioTipo } from '../lib/types'
@@ -76,10 +76,9 @@ export default function Relatorio() {
     window.open(config.sala_link, '_blank', 'noopener')
   }
 
-  function receberWhatsApp() {
-    void registrarEvento(relatorio!.id, 'clique_whatsapp')
-    const texto = encodeURIComponent(resumoWhatsApp(relatorio!, config))
-    window.open(`https://wa.me/?text=${texto}`, '_blank', 'noopener')
+  function abrirOferta(link: string) {
+    void registrarEvento(relatorio!.id, 'clique_oferta')
+    window.open(link, '_blank', 'noopener')
   }
 
   return (
@@ -210,30 +209,71 @@ export default function Relatorio() {
 
         <SeparadorDourado texto="parte 3 · o próximo passo" />
 
-        {/* Ponte pra Sala Secreta */}
-        <section className="cartao overflow-hidden">
-          <div className="bg-gold-soft/30 px-8 py-10 text-center md:px-12">
-            <span className="text-3xl">✦</span>
-            <h2 className="mt-3 text-4xl font-semibold">Sala Secreta</h2>
-            <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-primary/80">
-              {config.convite_texto}
-            </p>
-            <p className="mt-6 font-display text-2xl font-semibold text-gold-deep">
-              🗓 {config.sala_dia_hora}
-            </p>
-            <button onClick={abrirSala} className="botao-dourado mt-8 px-12 text-lg">
-              Garantir minha vaga na Sala Secreta ✦
-            </button>
-            <p className="mt-3 text-xs text-primary/50">Ao vivo, no Zoom · vagas limitadas da semana</p>
-          </div>
-          <div className="border-t border-gold/25 px-8 py-6 text-center">
-            <p className="text-sm text-primary/70">Quer guardar esse diagnóstico?</p>
-            <button onClick={receberWhatsApp}
-              className="mt-3 inline-flex items-center gap-2 rounded-full border border-gold/50 bg-card px-6 py-3 font-medium text-primary transition hover:bg-gold-soft/30">
-              💬 Receber o resumo no WhatsApp
-            </button>
-          </div>
-        </section>
+        {/* Próximo passo roteado pelo teste: Sala/mapeamento, Academia ou MNIA */}
+        {(d.rota ?? 'mapeamento') === 'mapeamento' && (
+          <section className="cartao overflow-hidden">
+            <div className="bg-gold-soft/30 px-8 py-10 text-center md:px-12">
+              <span className="text-3xl">✦</span>
+              <h2 className="mt-3 text-4xl font-semibold">Sala Secreta</h2>
+              <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-primary/80">
+                {config.convite_texto}
+              </p>
+              <p className="mt-6 font-display text-2xl font-semibold text-gold-deep">
+                🗓 {config.sala_dia_hora}
+              </p>
+              <button onClick={abrirSala} className="botao-dourado mt-8 px-12 text-lg">
+                Garantir minha vaga na Sala Secreta ✦
+              </button>
+              <p className="mt-3 text-xs text-primary/50">Ao vivo, no Zoom · vagas limitadas da semana</p>
+            </div>
+          </section>
+        )}
+
+        {d.rota === 'academia' && (
+          <section className="cartao overflow-hidden">
+            <div className="bg-gold-soft/30 px-8 py-10 text-center md:px-12">
+              <span className="text-3xl">✦</span>
+              <h2 className="mt-3 text-4xl font-semibold">
+                Academia das Novas Profissões com Inteligência Artificial
+              </h2>
+              <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-primary/80">
+                O seu teste mostrou que você está construindo o próximo capítulo — em transição ou
+                ainda definindo o que vender. A Academia é a formação onde a Inteligência
+                Artificial vira profissão: serviços prontos pra oferecer, clientes pra atender e
+                uma nova fonte de renda, um passo de cada vez.
+              </p>
+              <button onClick={() => abrirOferta(config.academia_link)} className="botao-dourado mt-8 px-12 text-lg">
+                Conhecer a Academia ✦
+              </button>
+              <p className="mt-3 text-xs text-primary/50">
+                Sua vitrine nova começa antes mesmo do Instagram ficar pronto
+              </p>
+            </div>
+          </section>
+        )}
+
+        {d.rota === 'mnia' && (
+          <section className="cartao overflow-hidden">
+            <div className="bg-gold-soft/30 px-8 py-10 text-center md:px-12">
+              <span className="text-3xl">✦</span>
+              <h2 className="mt-3 text-4xl font-semibold">
+                Meu Negócio com Inteligência Artificial
+              </h2>
+              <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-primary/80">
+                Você tem uma empresa rodando — o seu próximo passo não é aparecer mais, é colocar
+                a Inteligência Artificial pra trabalhar dentro dela: automatizar o que engole o
+                seu tempo, atender melhor sem aumentar o time e sobrar espaço pra você pensar o
+                negócio. É exatamente isso que o MNIA te mostra, aplicado na sua realidade.
+              </p>
+              <button onClick={() => abrirOferta(config.mnia_link)} className="botao-dourado mt-8 px-12 text-lg">
+                Conhecer o MNIA ✦
+              </button>
+              <p className="mt-3 text-xs text-primary/50">
+                Automatizar primeiro, aparecer depois — nessa ordem o tempo volta
+              </p>
+            </div>
+          </section>
+        )}
       </main>
       <Rodape />
     </div>

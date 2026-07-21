@@ -155,7 +155,7 @@ Deno.serve(async (req) => {
 
     const { data: lead, error: erroLead } = await supabase
       .from('leads')
-      .select('id, nome, nicho, instagram, origem, momento, faturamento, pilar, imagens, consentimento')
+      .select('id, nome, nicho, instagram, origem, momento, faturamento, pilar, rota, imagens, consentimento')
       .eq('id', lead_id)
       .single()
     if (erroLead || !lead) throw new Error('Lead não encontrado')
@@ -299,6 +299,7 @@ Deno.serve(async (req) => {
     if (!blocoTexto || blocoTexto.type !== 'text') throw new Error('Resposta sem conteúdo')
     const dados = JSON.parse(blocoTexto.text)
     dados.pilar = lead.pilar ?? 'vendas'
+    dados.rota = lead.rota ?? 'mapeamento'
 
     const { data: relatorio, error: erroRelatorio } = await supabase
       .from('relatorios')

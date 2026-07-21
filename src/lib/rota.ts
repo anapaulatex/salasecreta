@@ -1,16 +1,16 @@
 import type { Faturamento, Momento, Rota } from './types'
 
 /**
- * Roteamento de oferta pós-Sala Secreta (regra da Ana):
- * - Transição de carreira → Academia das Novas Profissões
- * - Empresária que quer Inteligência Artificial na empresa, faturando até R$5 mil → MNIA
- * - Demais → mapeamento da mentoria (Paraíso Digital)
+ * Roteamento de oferta (regra da Ana):
+ * - Transição de carreira OU ainda sem nada definido (não fatura) → Academia das Novas Profissões
+ * - Tem empresa e quer automatizar com Inteligência Artificial (até R$5 mil/mês) → MNIA
+ * - Demais → Sala Secreta → mapeamento da mentoria (Paraíso Digital)
  */
 export function classificarRota(momento: Momento, faturamento: Faturamento): Rota {
-  if (momento === 'transicao') return 'academia'
-  if (momento === 'empresaria' && (faturamento === 'nao_faturo' || faturamento === 'ate_5k')) {
-    return 'mnia'
+  if (momento === 'empresaria') {
+    return faturamento === 'nao_faturo' || faturamento === 'ate_5k' ? 'mnia' : 'mapeamento'
   }
+  if (momento === 'transicao' || faturamento === 'nao_faturo') return 'academia'
   return 'mapeamento'
 }
 

@@ -90,6 +90,7 @@ export const relatorioExemplo: RelatorioDados = {
   degrauEscala:
     'E tem um degrau acima do perfil arrumado, que quase nenhuma nutricionista enxerga: o seu método pode virar soluções com Inteligência Artificial — e ser vendido de forma escalável. O acompanhamento que hoje só existe quando você está presente pode virar um assistente que orienta a paciente entre as consultas; o seu protocolo pode virar um programa que atende 50 mulheres sem lotar a agenda. É a diferença entre vender a sua hora e vender o seu método — com mais valor, sem trabalhar mais. Esse é o caminho que as especialistas da mentoria estão fazendo.',
   pilar: 'autoridade',
+  rota: 'mapeamento',
 }
 
 export const relatorioReenvioExemplo: RelatorioDados = {
@@ -108,6 +109,8 @@ export const configPadrao: Config = {
   sala_link: 'https://lucrocomia.com.br/sala-secreta',
   convite_texto:
     'Você acabou de ver o diagnóstico e a direção. Na Sala Secreta desta semana eu mostro AO VIVO como especialistas como você estão fazendo essa virada com Inteligência Artificial — no nicho delas, do jeito delas.',
+  academia_link: 'https://lucrocomia.com.br/academia',
+  mnia_link: 'https://lucrocomia.com.br/mnia',
 }
 
 const diasAtras = (dias: number) => {
@@ -215,7 +218,7 @@ export const dashboardExemplo: DashboardDados = {
     { pilar: 'clareza', total: 1 },
     { pilar: 'tempo', total: 1 },
   ],
-  funil: { raioX: 5, cliquesSala: 3, cliquesWhatsApp: 2 },
+  funil: { raioX: 5, cliquesSala: 3, cliquesOferta: 2 },
 }
 
 export const relatorioExemploCompleto: Relatorio = {
